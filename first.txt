@@ -1,0 +1,2 @@
+Volvo,213,Sedam,true,20
+Произвдена запись в файл {0}first.txt
