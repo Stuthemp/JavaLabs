@@ -3,6 +3,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.nio.charset.StandardCharsets;
+import java.time.LocalTime;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -14,8 +15,24 @@ public class Truck extends Car {
 
     public Truck(String mark, int maxSpeed, Radio radio, int currentSpeed, int weight, double carcaseHeight) {
         super(mark, maxSpeed, radio, currentSpeed);
-        this.weight = weight;
-        this.carcaseHeight = carcaseHeight;
+        try {
+            this.weight = weight;
+        }
+        catch (Exception e){
+            String errorMessage = "Неправильно введен вес. Время ошибки: " + LocalTime.now();
+            Controller.logWriter(errorMessage);
+            Log.log(Level.WARNING, errorMessage);
+        }
+        try {
+            this.carcaseHeight = carcaseHeight;
+        }
+        catch (Exception e){
+            String errorMessage = "Неправильно введена высота кузова. Время ошибки: " + LocalTime.now();
+            Controller.logWriter(errorMessage);
+            Log.log(Level.WARNING, errorMessage);
+        }
+
+
     }
 
     public int getWeight() {
@@ -60,7 +77,7 @@ public class Truck extends Car {
 
             boolean doWeWriteLogs = isLogNeeded.equals("true");
             String message = "Произвдена запись в файл " + Path;
-            if(doWeWriteLogs) logWriter(message);
+            if(doWeWriteLogs) Controller.logWriter(message);
             writer.write(this.fileWriter());
             //writer.write(System.lineSeparator());
             writer.flush();

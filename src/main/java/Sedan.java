@@ -41,8 +41,8 @@ public class Sedan extends Car {
         ){
 
             boolean doWeWriteLogs = isLogNeeded.equals("true");
-            String message = "Произвдена запись в файл " + Path;
-            if(doWeWriteLogs) logWriter(message);
+            String message = "Произвдена запись в файл " + Path + " в " + LocalTime.now();
+            if(doWeWriteLogs) Controller.logWriter(message);
             writer.write(this.fileWriter());
             //writer.write(System.lineSeparator());
             writer.flush();

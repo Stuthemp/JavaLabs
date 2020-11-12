@@ -1,68 +1,13 @@
-
 import java.io.*;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Properties;
 import java.util.Scanner;
 import java.util.logging.Level;
-import java.util.logging.Logger;
 
+public class View {
 
-public class Main {
-
-    public static final String PATH_TO_PROPERTIES = "src/main/resources/config.properties";
-    //public static Properties prop = new Properties();
-    public static FileInputStream fileInputStream;
-    public static final Logger Log = Logger.getLogger(Main.class.getName());
-    static String login="";
-    static String userGroup = "";
-    static boolean logging;
-
-
-
-    public static void main(String[] args) {
-        //final Logger Log = Logger.getLogger(Main.class.getName());
-
-//        try {
-//            //обращаемся к файлу и получаем данные
-//            fileInputStream = new FileInputStream(Model.PATH_TO_PROPERTIES);
-//            Model.prop.load(fileInputStream);
-//
-//            login = Model.prop.getProperty("login");
-//            userGroup = Model.prop.getProperty("userGroup");
-//            Model.prop.getProperty("isLogNeeded");
-//
-//            //печатаем полученные данные в консоль
-//
-//        } catch (IOException e) {
-//            System.out.println("Ошибка в программе: файл " + PATH_TO_PROPERTIES + " не обнаружено");
-//            e.printStackTrace();
-//        }
-
-        Model.startApp();
-
-
-//		volvo.toFile("file.txt");
-//		kamaz.toFile("file.txt");
-
-//		ArrayList<Car> cars = Car.fromFile("file.txt");
-//
-//		System.out.println(cars.get(3).fileWriter());
-        Controller.logStart(Model.prop.getProperty("login"));
-        if(Model.userGroup.equals("root"))
-        {
-            View.enterPassword();
-            View.rootMenu();
-        }
-        else View.menu();
-
-    }
-
-    /*
     public static void rootMenu(){
 //        Properties prop = new Properties();
 //        FileInputStream fileInputStream;
@@ -76,7 +21,7 @@ public class Main {
 //            rootMenu();
 //        }
         int choice;
-        System.out.println("Добро пожаловать," + login + "\nВыберите действие");
+        System.out.println("Добро пожаловать," + Model.login + "\nВыберите действие");
         System.out.println("1: Демонстрация работы класса Sedan");
         System.out.println("2: Демонстрация работы класса Truck");
         System.out.println("3: Демонстрация работы класса DPS");
@@ -91,7 +36,7 @@ public class Main {
             case 1: sedanCreation();break;
             case 2: truckCreation();break;
             case 3: dpsDemonstration();break;
-            case 4: logEnd(login);break;
+            case 4: Controller.logEnd(Model.login);break;
             case 5: switchDebugging();break;
             case 6:
                 System.out.println("Автотесты активно идут...");
@@ -100,17 +45,17 @@ public class Main {
                 break;
 
             case 7: showDb();
-                    rootMenu();
-                    break;
+                rootMenu();
+                break;
             case 8: deleteFromDb();
-                    rootMenu();
-                    break;
+                rootMenu();
+                break;
             case 9: changeDb();
-                    rootMenu();
-                    break;
+                rootMenu();
+                break;
             default: {
                 String errorMessage = "Неправильно выбран пункт меню. Время ошибки: " + LocalTime.now();
-                Car.logWriter(errorMessage);
+                Controller.logWriter(errorMessage);
                 rootMenu();
             }
         }
@@ -123,7 +68,7 @@ public class Main {
 
         Scanner scanner = new Scanner(System.in);
         int choice;
-        System.out.println("Добро пожаловать," + login + "\nВыберите действие");
+        System.out.println("Добро пожаловать," + Model.login + "\nВыберите действие");
         System.out.println("1: Демонстрация работы класса Sedan");
         System.out.println("2: Демонстрация работы класса Truck");
         System.out.println("3: Демонстрация работы класса DPS");
@@ -136,7 +81,7 @@ public class Main {
             case 1: sedanCreation();break;
             case 2: truckCreation();break;
             case 3: dpsDemonstration();break;
-            case 4: logEnd(login);break;
+            case 4: Controller.logEnd(Model.login);break;
             case 5: showDb();
                 rootMenu();
                 break;
@@ -148,7 +93,7 @@ public class Main {
                 break;
             default: {
                 String errorMessage = "Неправильно выбран пункт меню. Время ошибки: " + LocalTime.now();
-                Car.logWriter(errorMessage);
+                Controller.logWriter(errorMessage);
                 menu();
             }
         }
@@ -171,7 +116,9 @@ public class Main {
         }
         catch (Exception e){
             String errorMessage = "Неправильно введена максимальная скорость. Время ошибки: " + LocalTime.now();
-            Car.logWriter(errorMessage);
+            Controller.logWriter(errorMessage);
+            System.out.println("Неправильно введена максимальная скорость.");
+            sedanCreation();
             return;
         }
         System.out.println("Включено ли радио?: ");
@@ -180,7 +127,9 @@ public class Main {
         }
         catch (Exception e){
             String errorMessage = "Неправильно введена информация о состоянии радио. Время ошибки: " + LocalTime.now();
-            Car.logWriter(errorMessage);
+            Controller.logWriter(errorMessage);
+            System.out.println("Неправильно введена информация о состоянии радио");
+            sedanCreation();
             return;
         }
 
@@ -190,7 +139,9 @@ public class Main {
         }
         catch (Exception e){
             String errorMessage = "Неправильно введена текущая скорость. Время ошибки: " + LocalTime.now();
-            Car.logWriter(errorMessage);
+            Controller.logWriter(errorMessage);
+            System.out.println("Неправильно введена текущая скорость.");
+            sedanCreation();
             return;
         }
 
@@ -248,16 +199,19 @@ public class Main {
                     String path;
                     System.out.println("Введите название файла: ");
                     path = scanner.next();
-                    sedan.toFile(path,prop.getProperty("isLogNeeded"));
+                    sedan.toFile(path,Model.prop.getProperty("isLogNeeded"));
                     sleep();
                 }
                 sedanDemonstration(sedan);
             }
             case 8 -> {
-                if(userGroup.equals("root")) rootMenu();
+                if(Model.userGroup.equals("root")) rootMenu();
                 else menu();
             }
-            default -> sedanDemonstration(sedan);
+            default -> {
+                System.out.println("Неправильно выбран пункт меню");
+                sedanDemonstration(sedan);
+            }
         }
     }
 
@@ -280,7 +234,9 @@ public class Main {
         }
         catch (Exception e){
             String errorMessage = "Неправильно введена максимальная скорость. Время ошибки: " + LocalTime.now();
-            Car.logWriter(errorMessage);
+            Controller.logWriter(errorMessage);
+            System.out.println("Неправильно введена максимальная скорость.");
+            truckCreation();
             return;
         }
         System.out.println("Включено ли радио?: ");
@@ -289,7 +245,9 @@ public class Main {
         }
         catch (Exception e){
             String errorMessage = "Неправильно введена информация о состоянии радио. Время ошибки: " + LocalTime.now();
-            Car.logWriter(errorMessage);
+            Controller.logWriter(errorMessage);
+            System.out.println("Неправильно введена информация о состоянии радио.");
+            truckCreation();
             return;
         }
 
@@ -299,7 +257,9 @@ public class Main {
         }
         catch (Exception e){
             String errorMessage = "Неправильно введена текущая скорость. Время ошибки: " + LocalTime.now();
-            Car.logWriter(errorMessage);
+            Controller.logWriter(errorMessage);
+            System.out.println("Неправильно введена текущая скорость.");
+            truckCreation();
             return;
         }
         System.out.println("Введите вес машины: ");
@@ -308,7 +268,9 @@ public class Main {
         }
         catch (Exception e){
             String errorMessage = "Неправильно введен вес грузовика. Время ошибки: " + LocalTime.now();
-            Car.logWriter(errorMessage);
+            Controller.logWriter(errorMessage);
+            System.out.println("Неправильно введен вес грузовика.");
+            truckCreation();
             return;
         }
         System.out.println("Введите высоту кузова");
@@ -317,7 +279,9 @@ public class Main {
         }
         catch (Exception e){
             String errorMessage = "Неправильно введена высота кузова грузовика. Время ошибки: " + LocalTime.now();
-            Car.logWriter(errorMessage);
+            Controller.logWriter(errorMessage);
+            System.out.println("Неправильно введена высота кузова грузовика.");
+            truckCreation();
             return;
         }
         Truck truck = new Truck(mark,maxSpeed,new Radio(currentStation,isOn),currentSpeed,weight,carcaseHeight);
@@ -386,16 +350,19 @@ public class Main {
                     String path;
                     System.out.println("Введите название файла: ");
                     path = scanner.next();
-                    truck.toFile(path,prop.getProperty("isLogNeeded"));
+                    truck.toFile(path,Model.prop.getProperty("isLogNeeded"));
                     sleep();
                 }
                 truckDemonstration(truck);
             }
             case 10 -> {
-                if(userGroup.equals("root")) rootMenu();
+                if(Model.userGroup.equals("root")) rootMenu();
                 else menu();
             }
-            default -> truckDemonstration(truck);
+            default -> {
+                System.out.println("Неправльно выбран пункт меню.");
+                truckDemonstration(truck);
+            }
         }
     }
 
@@ -442,6 +409,10 @@ public class Main {
                 sleep();
                 dpsDemonstration();
             }
+            default -> {
+                System.out.println("Неправильно выбран пункт меню.");
+                dpsDemonstration();
+            }
         }
 
     }
@@ -457,8 +428,9 @@ public class Main {
         }
     }
 
+    /*
     public static void logStart(String login){
-        if(!logging) return;
+        if(!Model.logging) return;
         try(
                 OutputStreamWriter writer = new OutputStreamWriter(new FileOutputStream("logs.txt",true), StandardCharsets.UTF_8)
         ){
@@ -468,13 +440,13 @@ public class Main {
             writer.close();
         }
         catch(IOException e){
-            Log.log(Level.SEVERE, "Ошибка вывода!", e);
+            Model.Log.log(Level.SEVERE, "Ошибка вывода!", e);
         }
 
     }
 
     public static void logEnd(String login){
-        if(!logging) return;
+        if(!Model.logging) return;
         try(
                 OutputStreamWriter writer = new OutputStreamWriter(new FileOutputStream("logs.txt",true), StandardCharsets.UTF_8)
         ){
@@ -484,19 +456,20 @@ public class Main {
             writer.close();
         }
         catch(IOException e){
-            Log.log(Level.SEVERE, "Ошибка вывода!", e);
+            Model.Log.log(Level.SEVERE, "Ошибка вывода!", e);
         }
 
     }
+     */
 
     public static void enterPassword(){
         Scanner scanner = new Scanner(System.in);
         String password;
         System.out.println("Введите пароль для получения прав root.");
         password = scanner.nextLine();
-        if(!password.equals(prop.getProperty("password"))){
+        if(!password.equals(Model.prop.getProperty("password"))){
             String errorMessage = "Неудачная попытка получения прав root. Время ошибки: " + LocalTime.now();
-            Car.logWriter(errorMessage);
+            Controller.logWriter(errorMessage);
             enterPassword();
         }
     }
@@ -505,13 +478,13 @@ public class Main {
         //prop.setProperty("isLogNeeded","true");
         FileOutputStream out = null;
         try {
-            out = new FileOutputStream(PATH_TO_PROPERTIES);
+            out = new FileOutputStream(Model.PATH_TO_PROPERTIES);
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
         FileInputStream in = null;
         try {
-            in = new FileInputStream(PATH_TO_PROPERTIES);
+            in = new FileInputStream(Model.PATH_TO_PROPERTIES);
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
@@ -527,7 +500,7 @@ public class Main {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        if(logging) {
+        if(Model.logging) {
             Main.logging = false;
             props.setProperty("isLogNeeded", "false");
             props.setProperty("login", "Semyon");
@@ -552,7 +525,7 @@ public class Main {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        Car.logWriter("Запись логов включена");
+        Controller.logWriter("Запись логов включена");
         rootMenu();
     }
 
@@ -561,19 +534,38 @@ public class Main {
         String path;
         int index;
         System.out.println("Введите название файла");
-        path = scanner.nextLine();
+        try {
+            path = scanner.nextLine();
+        }
+        catch (Exception e){
+            String errorMessage = "Неправильно введено название файла. Время ошибки: " + LocalTime.now();
+            Controller.logWriter(errorMessage);
+            System.out.println("Неправильно введено название файла.");
+            deleteFromDb();
+            return;
+        }
+        //TODO обработать размер массива
         System.out.println("Введите индекс элемента который необходимо удалить.");
         index = scanner.nextInt();
-        Car.deleteObject(path,index-1);
-        Car.logWriter("Из файла " + path + " удален элемент. " + " Время: " + LocalTime.now());
+        Controller.deleteObject(path,index-1);
+        Controller.logWriter("Из файла " + path + " удален элемент. " + " Время: " + LocalTime.now());
     }
 
     public static void showDb(){
         Scanner scanner = new Scanner(System.in);
         String path;
         System.out.println("Введите название файла");
-        path = scanner.nextLine();
-        ArrayList<Car> cars = Car.fromFile(path);
+        try {
+            path = scanner.nextLine();
+        }
+        catch (Exception e){
+            String errorMessage = "Неправильно введено название файла. Время ошибки: " + LocalTime.now();
+            Controller.logWriter(errorMessage);
+            System.out.println("Неправильно введено название файла.");
+            showDb();
+            return;
+        }
+        ArrayList<Car> cars = Controller.fromFile(path);
         for (Car car: cars){
             System.out.println(car.fileWriter());
         }
@@ -584,14 +576,23 @@ public class Main {
         Scanner scanner = new Scanner(System.in);
         String path;
         System.out.println("Введите название файла");
-        path = scanner.nextLine();
-        ArrayList<Car> cars = Car.fromFile(path);
+        try {
+            path = scanner.nextLine();
+        }
+        catch (Exception e){
+            String errorMessage = "Неправильно введено название файла. Время ошибки: " + LocalTime.now();
+            Controller.logWriter(errorMessage);
+            System.out.println("Неправильно введено название файла.");
+            changeDb();
+            return;
+        }
+        ArrayList<Car> cars = Controller.fromFile(path);
         int index;
         System.out.println("Введите индекс измняемого элемента");
         index= scanner.nextInt();
-        ArrayList<Car> carsNew = Car.changeObject(cars,index);
+        ArrayList<Car> carsNew = Controller.changeObject(cars,index-1);
         String logs;
-        if(logging){
+        if(Model.logging){
             logs = "true";
         }
         else logs="false";
@@ -603,13 +604,10 @@ public class Main {
             for (Car obj: carsNew){
                 obj.toFile(path,logs);
             }
-            Car.logWriter("Внесены изменения в файл " + path + " Время: " + LocalTime.now());
+            Controller.logWriter("Внесены изменения в файл " + path + " Время: " + LocalTime.now());
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
 
     }
-*/
-
-
 }
