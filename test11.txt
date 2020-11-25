@@ -1,0 +1,4 @@
+lada,100,Dorojnoe,true,35
+Nissan,200,Love,true,20
+Audi,300,JumorFM,true,30
+BMW,400,Drive,true,40
