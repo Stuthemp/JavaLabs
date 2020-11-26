@@ -48,19 +48,4 @@ public class Radio {
         return SB.toString();
     }
 
-//    public void logWriter(String message){
-//        try(
-//                OutputStreamWriter writer = new OutputStreamWriter(new FileOutputStream("logs.txt",true), StandardCharsets.UTF_8)
-//        ){
-//            Log.log(Level.INFO, message);
-//            writer.write(System.lineSeparator());
-//            writer.write(message);
-//            writer.flush();
-//            writer.close();
-//        }
-//        catch(IOException e){
-//            Log.log(Level.SEVERE, "Ошибка вывода!", e);
-//        }
-//
-//    }
 }

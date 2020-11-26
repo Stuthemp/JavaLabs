@@ -1,9 +1,7 @@
 import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalTime;
-import java.util.ArrayList;
-import java.util.Properties;
-import java.util.Scanner;
+import java.util.*;
 import java.util.logging.Level;
 
 public class View {
@@ -31,6 +29,9 @@ public class View {
         System.out.println("7: Продемонстрировать содержание файла.");
         System.out.println("8: Удалить элемент из файла.");
         System.out.println("9: Изменить элемент в файле.");
+        System.out.println("10: Логи ArrayList.");
+        System.out.println("11: Логи LinkedList.");
+
         choice = scanner.nextInt();
         switch (choice){
             case 1: sedanCreation();break;
@@ -53,6 +54,8 @@ public class View {
             case 9: changeDb();
                 rootMenu();
                 break;
+            case 10: arrayListDemonstration(); rootMenu(); break;
+            case 11: linkedListDemonstration(); rootMenu(); break;
             default: {
                 String errorMessage = "Неправильно выбран пункт меню. Время ошибки: " + LocalTime.now();
                 Controller.logWriter(errorMessage);
@@ -76,6 +79,8 @@ public class View {
         System.out.println("5: Продемонстрировать содержание файла.");
         System.out.println("6: Удалить элемент из файла.");
         System.out.println("7: Изменить элемент в файле.");
+        System.out.println("8: Вызов методов для ArrayList.");
+        System.out.println("9: Вызов методов для LinkedList.");
         choice = scanner.nextInt();
         switch (choice){
             case 1: sedanCreation();break;
@@ -91,6 +96,9 @@ public class View {
             case 7: changeDb();
                 rootMenu();
                 break;
+            case 8: arrayListDemonstration(); break;
+            case 9:
+                System.out.println("Yo is me");//linkedListMethods(); break;
             default: {
                 String errorMessage = "Неправильно выбран пункт меню. Время ошибки: " + LocalTime.now();
                 Controller.logWriter(errorMessage);
@@ -428,40 +436,6 @@ public class View {
         }
     }
 
-    /*
-    public static void logStart(String login){
-        if(!Model.logging) return;
-        try(
-                OutputStreamWriter writer = new OutputStreamWriter(new FileOutputStream("logs.txt",true), StandardCharsets.UTF_8)
-        ){
-            writer.write(System.lineSeparator());
-            writer.write("Программа запущена пользователем " + login  + " в " + LocalTime.now());
-            writer.flush();
-            writer.close();
-        }
-        catch(IOException e){
-            Model.Log.log(Level.SEVERE, "Ошибка вывода!", e);
-        }
-
-    }
-
-    public static void logEnd(String login){
-        if(!Model.logging) return;
-        try(
-                OutputStreamWriter writer = new OutputStreamWriter(new FileOutputStream("logs.txt",true), StandardCharsets.UTF_8)
-        ){
-            writer.write(System.lineSeparator());
-            writer.write("Программа, запущенная пользователем " + login + " завершена в " + LocalTime.now());
-            writer.flush();
-            writer.close();
-        }
-        catch(IOException e){
-            Model.Log.log(Level.SEVERE, "Ошибка вывода!", e);
-        }
-
-    }
-     */
-
     public static void enterPassword(){
         Scanner scanner = new Scanner(System.in);
         String password;
@@ -533,6 +507,7 @@ public class View {
         Scanner scanner = new Scanner(System.in);
         String path;
         int index;
+        boolean indexIsBad = true;
         System.out.println("Введите название файла");
         try {
             path = scanner.nextLine();
@@ -544,10 +519,19 @@ public class View {
             deleteFromDb();
             return;
         }
-        //TODO обработать размер массива
+
         System.out.println("Введите индекс элемента который необходимо удалить.");
         index = scanner.nextInt();
-        Controller.deleteObject(path,index-1);
+
+        try {
+            Controller.deleteObject(path, index - 1);
+        } catch (Exception e){
+            String errorMessage = "Неправильно введен индекс. Время ошибки: " + LocalTime.now();
+            Controller.logWriter(errorMessage);
+            System.out.println("Неправильно введен индекс.");
+            deleteFromDb();
+            return;
+        }
         Controller.logWriter("Из файла " + path + " удален элемент. " + " Время: " + LocalTime.now());
     }
 
@@ -609,5 +593,57 @@ public class View {
             e.printStackTrace();
         }
 
+    }
+
+    public static void arrayListMethods(){
+        Scanner scanner = new Scanner(System.in);
+        System.out.println("Выберите операцию: ");
+        System.out.println("1: Создание массива");
+        System.out.println("2: Очистка массива");
+        int choice = scanner.nextInt();
+
+        switch (choice) {
+            case 1 -> createArraylist();
+            case 2 -> System.out.println("123");//cleanArrayList();
+            default -> {
+                System.out.println("Неверный ввод");
+                arrayListMethods();
+                break;
+            }
+        }
+    }
+
+    public static ArrayList<Sedan> createArraylist(){
+        Scanner scanner = new Scanner(System.in);
+        System.out.println("Введите размер массива: ");
+        int size = scanner.nextInt();
+        ArrayList<Sedan> sedans = Controller.arrayListCreation(size);
+        return sedans;
+    }
+
+    public static void arrayListDemonstration(){
+        ArrayList<Sedan> ARRAY_LIST_SIZE_10 = Controller.arrayListCreation(10);
+        ArrayList<Sedan> ARRAY_LIST_SIZE_100 = Controller.arrayListCreation(100);
+        ArrayList<Sedan> ARRAY_LIST_SIZE_1000 = Controller.arrayListCreation(1000);
+        ArrayList<Sedan> ARRAY_LIST_SIZE_10000 = Controller.arrayListCreation(10000);
+        ArrayList<Sedan> ARRAY_LIST_SIZE_100000= Controller.arrayListCreation(100000);
+        Controller.arrayListClean(ARRAY_LIST_SIZE_10);
+        Controller.arrayListClean(ARRAY_LIST_SIZE_100);
+        Controller.arrayListClean(ARRAY_LIST_SIZE_1000);
+        Controller.arrayListClean(ARRAY_LIST_SIZE_10000);
+        Controller.arrayListClean(ARRAY_LIST_SIZE_100000);
+    }
+
+    public static void linkedListDemonstration(){
+        LinkedList<Sedan> LINKED_LIST_SIZE_10 = Controller.linkedListCreation(10);
+        LinkedList<Sedan> LINKED_LIST_SIZE_100 = Controller.linkedListCreation(100);
+        LinkedList<Sedan> LINKED_LIST_SIZE_1000 = Controller.linkedListCreation(1000);
+        LinkedList<Sedan> LINKED_LIST_SIZE_10000 = Controller.linkedListCreation(10000);
+        LinkedList<Sedan> LINKED_LIST_SIZE_100000= Controller.linkedListCreation(100000);
+        Controller.linkedListClean(LINKED_LIST_SIZE_10);
+        Controller.linkedListClean(LINKED_LIST_SIZE_100);
+        Controller.linkedListClean(LINKED_LIST_SIZE_1000);
+        Controller.linkedListClean(LINKED_LIST_SIZE_10000);
+        Controller.linkedListClean(LINKED_LIST_SIZE_100000);
     }
 }

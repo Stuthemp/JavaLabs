@@ -2,6 +2,8 @@ import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalTime;
 import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Scanner;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -197,7 +199,7 @@ public class Controller {
     }
 
     public static void logWriter(String message){
-        if(!Main.logging) return;
+        if(!Model.logging) return;
         try(
                 OutputStreamWriter writer = new OutputStreamWriter(new FileOutputStream("logs.txt",true), StandardCharsets.UTF_8)
         ){
@@ -242,5 +244,127 @@ public class Controller {
             Model.Log.log(Level.SEVERE, "Ошибка вывода!", e);
         }
 
+    }
+
+    public static ArrayList<Sedan> arrayListCreation(int size){
+        ArrayList<Sedan> sedanArrayList = new ArrayList<>();
+        String logSeparator = "--------------------------------------------------------------------------";
+        logWriter(logSeparator);
+        String[] marks = {"Volvo", "Nissan", "Lada", "BMW", "Subaru", "Toyota"};
+        long start = System.currentTimeMillis();
+        for (int i = 0; i < size; i++) {
+
+            long internalStart = System.currentTimeMillis();
+
+            int mark = (int)(Math.random()*6);
+            int maxSpeed = (int)((Math.random()*((300-100)+1))+100);
+            int currentSpeed = (int)(Math.random()*maxSpeed);
+            sedanArrayList.add(new Sedan(marks[mark],maxSpeed,new Radio(),currentSpeed));
+
+            long internalEnd = System.currentTimeMillis();
+
+            String msg = "add LinkedList, ID=" + i + ", " + (internalEnd - internalStart);
+            logWriter(msg);
+        }
+        long end = System.currentTimeMillis();
+        long timeTaken = end - start;
+        String count = "Count=" + size;
+        logWriter(count);
+        String medianTime = "addArrayListMedianTime=" + (double)timeTaken/size;
+        logWriter(medianTime);
+        String totalTime = "addArrayListTotalTime=" + timeTaken;
+        logWriter(totalTime);
+        return sedanArrayList;
+    }
+
+    public static ArrayList<Sedan> arrayListClean(ArrayList<Sedan> sedans){
+        String logSeparator = "--------------------------------------------------------------------------";
+        logWriter(logSeparator);
+        int size = sedans.size();
+        long start = System.currentTimeMillis();
+        for (int i = 0; i < sedans.size()/10; i++) {
+
+            long internalStart = System.currentTimeMillis();
+
+            int index = (int)(Math.random()*sedans.size());
+           // System.out.println(index);
+
+            sedans.remove(index);
+
+            long internalEnd = System.currentTimeMillis();
+
+            String msg = "remove ArrayList, ID=" + index + ", " + (internalEnd - internalStart);
+            logWriter(msg);
+        }
+        long end = System.currentTimeMillis();
+        long timeTaken = end - start;
+        String count = "Count=" + size/10;
+        logWriter(count);
+        String medianTime = "removeArrayListMedianTime=" + (double)timeTaken/size/10;
+        logWriter(medianTime);
+        String totalTime = "removeArrayListTotalTime=" + timeTaken;
+        logWriter(totalTime);
+        return sedans;
+    }
+
+    public static LinkedList<Sedan> linkedListCreation(int size){
+        LinkedList<Sedan> sedanArrayList = new LinkedList<>();
+        String logSeparator = "--------------------------------------------------------------------------";
+        logWriter(logSeparator);
+        String[] marks = {"Volvo", "Nissan", "Lada", "BMW", "Subaru", "Toyota"};
+        long start = System.currentTimeMillis();
+        for (int i = 0; i < size; i++) {
+
+            long internalStart = System.currentTimeMillis();
+
+            int mark = (int)(Math.random()*6);
+            int maxSpeed = (int)((Math.random()*((300-100)+1))+100);
+            int currentSpeed = (int)(Math.random()*maxSpeed);
+            sedanArrayList.add(new Sedan(marks[mark],maxSpeed,new Radio(),currentSpeed));
+
+            long internalEnd = System.currentTimeMillis();
+
+            String msg = "add LinkedList, ID=" + i + ", " + (internalEnd - internalStart);
+            logWriter(msg);
+        }
+        long end = System.currentTimeMillis();
+        long timeTaken = end - start;
+        String count = "Count=" + size;
+        logWriter(count);
+        String medianTime = "addLinkedListMedianTime=" + (double)timeTaken/size;
+        logWriter(medianTime);
+        String totalTime = "addLinkedListTotalTime=" + timeTaken;
+        logWriter(totalTime);
+        return sedanArrayList;
+    }
+
+    public static LinkedList<Sedan> linkedListClean(LinkedList<Sedan> sedans){
+        String logSeparator = "--------------------------------------------------------------------------";
+        logWriter(logSeparator);
+        int size = sedans.size();
+        long start = System.currentTimeMillis();
+        for (int i = 0; i < sedans.size()/10; i++) {
+
+            long internalStart = System.currentTimeMillis();
+
+            int index = (int)(Math.random()*sedans.size());
+            // System.out.println(index);
+
+            sedans.remove(index);
+
+            long internalEnd = System.currentTimeMillis();
+
+            String msg = "remove ArrayList, ID=" + index + ", " + (internalEnd - internalStart);
+            logWriter(msg);
+        }
+        long end = System.currentTimeMillis();
+        long timeTaken = end - start;
+        String count = "Count=" + size/10;
+        logWriter(count);
+        String medianTime = "removeLinkedListMedianTime=" + (double)timeTaken/size/10;
+        logWriter(medianTime);
+        String totalTime = "removeLinkedListTotalTime=" + timeTaken;
+        logWriter(totalTime);
+        return sedans;
     }
 }

@@ -22,8 +22,6 @@ public class Sedan extends Car {
         System.out.println("Sedan moves with speed " + currentSpeed + "km/h.");
     }
 
-
-
     @Override
     public String fileWriter(){
         StringBuilder SB = new StringBuilder("");

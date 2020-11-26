@@ -22,7 +22,7 @@ public class Model {
 
             login = Model.prop.getProperty("login");
             userGroup = Model.prop.getProperty("userGroup");
-            Model.prop.getProperty("isLogNeeded");
+            logging = Boolean.parseBoolean(Model.prop.getProperty("isLogNeeded"));
 
             //печатаем полученные данные в консоль
 
