@@ -3,36 +3,24 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Path;
 import java.time.LocalTime;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+/**
+ * Один из двух основных классов - грузовой автомобиль
+ */
+
+//check1
 public class Truck extends Car {
     private int weight;
     private double carcaseHeight;
-    private static final Logger Log =
-            Logger.getLogger(Main.class.getName());
 
     public Truck(String mark, int maxSpeed, Radio radio, int currentSpeed, int weight, double carcaseHeight) {
         super(mark, maxSpeed, radio, currentSpeed);
-        try {
-            this.weight = weight;
-        }
-        catch (Exception e){
-            String errorMessage = "Неправильно введен вес. Время ошибки: " + LocalTime.now();
-            Controller.logWriter(errorMessage);
-            Log.log(Level.WARNING, errorMessage);
-        }
-        try {
-            this.carcaseHeight = carcaseHeight;
-        }
-        catch (Exception e){
-            String errorMessage = "Неправильно введена высота кузова. Время ошибки: " + LocalTime.now();
-            Controller.logWriter(errorMessage);
-            Log.log(Level.WARNING, errorMessage);
-        }
-
-
+        this.weight = weight;
+        this.carcaseHeight = carcaseHeight;
     }
 
     public int getWeight() {
@@ -56,6 +44,10 @@ public class Truck extends Car {
         System.out.println("Truck moves with the speed " + currentSpeed + " km/h.");
     }
 
+    /**
+     * Компоновка информации об объекте в строку
+     * @return - строка с информацией об объекте
+     */
     @Override
     public String fileWriter(){
         StringBuilder SB = new StringBuilder("");
@@ -68,26 +60,32 @@ public class Truck extends Car {
         return SB.toString() + System.lineSeparator();
     }
 
-    @Override
-    public void toFile(String Path, String isLogNeeded){
-        try(
-                OutputStreamWriter writer = new OutputStreamWriter(new FileOutputStream(Path,true), StandardCharsets.UTF_8)
-        ){
+    /**
+     * TODO попробовать перетащить в контролер
+     * @param Path - путь для файла записи
+     */
+//    @Override
+//    public void toFile(String Path){
+//        try(
+//                OutputStreamWriter writer = new OutputStreamWriter(new FileOutputStream(Path,true), StandardCharsets.UTF_8)
+//        ){
+//
+//
+//            String message = "Произвдена запись в файл " + Path;
+//            if(Model.logging) ExceptionHandler.logWriter(message);
+//            writer.write(this.fileWriter());
+//            //writer.write(System.lineSeparator());
+//            writer.flush();
+//            writer.close();
+//        }
+//        catch(IOException e){
+//            ExceptionHandler.addErr(e,"Ошибка записи в файл");
+//        }
+//    }
 
-
-            boolean doWeWriteLogs = isLogNeeded.equals("true");
-            String message = "Произвдена запись в файл " + Path;
-            if(doWeWriteLogs) Controller.logWriter(message);
-            writer.write(this.fileWriter());
-            //writer.write(System.lineSeparator());
-            writer.flush();
-            writer.close();
-        }
-        catch(IOException e){
-            Log.log(Level.SEVERE, "Ошибка вывода!", e);
-        }
-    }
-
+    /**
+     * Выводит параметры, нужные для демонстрации DPS
+     */
     @Override
     public void dpsRelatedParams(){
         System.out.printf("Марка: %s\nТекущая скорость: %d\nВес: %d\nВысота кузова: %f\n",mark,currentSpeed,weight,carcaseHeight);

@@ -9,10 +9,14 @@ import java.util.Scanner;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+/**
+ * Абстрактный класс для Sedan и Truck
+ * По сути облегчает работу с файлами и коллекциями, позволяя ссылаться на него
+ */
+
+//check1
 public abstract class Car {
 
-    public static final String PATH_TO_PROPERTIES = "src/main/resources/config.properties";
-    Properties prop = new Properties();
     protected String mark;
     protected int maxSpeed;
     protected Radio radio;
@@ -21,50 +25,32 @@ public abstract class Car {
             Logger.getLogger(Main.class.getName());
 
     public Car(String mark, int maxSpeed, Radio radio, int currentSpeed) {
-        try {
             this.mark = mark;
-        }
-        catch (Exception e){
-            String errorMessage = "Неправильно введена марка. Время ошибки: " + LocalTime.now();
-            Controller.logWriter(errorMessage);
-            Log.log(Level.WARNING, errorMessage);
-        }
-        try {
             this.maxSpeed = maxSpeed;
-        }
-        catch (Exception e){
-            String errorMessage = "Неправильно введена Максимальная скорость. Время ошибки: " + LocalTime.now();
-            Controller.logWriter(errorMessage);
-            Log.log(Level.WARNING, errorMessage);
-        }
-        try {
             this.radio = radio;
-        }
-        catch (Exception e){
-            String errorMessage = "Неправильно заданы парметры радио. Время ошибки: " + LocalTime.now();
-            Controller.logWriter(errorMessage);
-            Log.log(Level.WARNING, errorMessage);
-        }
-        try {
             this.currentSpeed = currentSpeed;
         }
-        catch (Exception e){
-            String errorMessage = "Неправильно введена текущая скорость. Время ошибки: " + LocalTime.now();
-            Controller.logWriter(errorMessage);
-            Log.log(Level.WARNING, errorMessage);
-        }
 
 
-
-    }
 
     public void move(int currentSpeed){
     }
 
+    /**
+     * Компоновка информации об объекте в строку
+     * @return - строка с информацией об объекте
+     */
     public String fileWriter(){return "";}
 
-    public void toFile(String Path, String isLogNeeded){}
+    /**
+     * TODO попробовать перетащить в контролер
+     * @param Path - путь для файла записи
+     */
+    //public void toFile(String Path){}
 
+    /**
+     * Выводит параметры, нужные для демонстрации DPS
+     */
     public void dpsRelatedParams(){};
 
     public String getMark() {

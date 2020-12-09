@@ -3,6 +3,11 @@ import java.io.IOException;
 import java.util.Properties;
 import java.util.logging.Logger;
 
+/**
+ * Хранит пути к файлам,данный из properties,и всякие переменные, которые могут быть использованы несколькими классами
+ */
+
+//check1
 public class Model {
 
 
@@ -13,7 +18,8 @@ public class Model {
     static String login="";
     static String userGroup = "";
     static boolean logging;
-
+    public static long y[][] = new long[2][5]; //массив значений
+    public static String col[] = {"BLUE", "RED"};//массив цвет
     public static void startApp() {
         try {
             //обращаемся к файлу и получаем данные
@@ -28,8 +34,8 @@ public class Model {
 
         } catch (
                 IOException e) {
-            System.out.println("Ошибка в программе: файл " + PATH_TO_PROPERTIES + " не обнаружено");
-            e.printStackTrace();
+            String errorMsg = "Ошибка в программе: файл " + PATH_TO_PROPERTIES + " не обнаружен";
+            ExceptionHandler.addErr(e,errorMsg);
         }
     }
 

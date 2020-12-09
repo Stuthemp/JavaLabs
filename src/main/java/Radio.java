@@ -6,6 +6,11 @@ import java.time.LocalTime;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+/**
+ * Радио для машин
+ */
+
+//check1
 public class Radio {
 
     private static final Logger Log =
@@ -17,7 +22,7 @@ public class Radio {
         }
         catch (Exception e){
             String errorMessage = "Неправильно введено название станции. Время ошибки: " + LocalTime.now();
-            Controller.logWriter(errorMessage);
+            ExceptionHandler.logWriter(errorMessage);
             Log.log(Level.WARNING, errorMessage);
         }
         try {
@@ -25,7 +30,7 @@ public class Radio {
         }
         catch (Exception e){
             String errorMessage = "Неправильно задана информации о работе радио. Время ошибки: " + LocalTime.now();
-            Controller.logWriter(errorMessage);
+            ExceptionHandler.logWriter(errorMessage);
             Log.log(Level.WARNING, errorMessage);
         }
 
@@ -36,11 +41,16 @@ public class Radio {
     }
     public String currentStation;
     public boolean isOn;
+
     public void playTunes(){
         if(isOn) System.out.println("The station " + currentStation +" plays great music.");
         else System.out.println("You need to turn on the radio.");
     }
 
+    /**
+     * Компоновка информации об объекте в строку
+     * @return - строка с информацией об объекте
+     */
     public String fileWriter(){
         StringBuilder SB = new StringBuilder("");
         SB.append(this.currentStation).append(",");

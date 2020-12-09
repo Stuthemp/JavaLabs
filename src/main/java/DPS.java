@@ -1,4 +1,8 @@
+/**
+ * Класс,провряющий парметры автомобилей
+ */
 
+//check1
 public class DPS {
     static final int  speedLimit = 90;
     static final int maxWeight = 1000;

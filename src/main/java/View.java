@@ -1,23 +1,44 @@
+import javax.swing.*;
+import java.awt.*;
 import java.io.*;
-import java.nio.charset.StandardCharsets;
 import java.time.LocalTime;
 import java.util.*;
 import java.util.logging.Level;
 
-public class View {
+/**
+ * Обеспчивает взаимодействие пользователя с программой
+ */
 
-    public static void rootMenu(){
-//        Properties prop = new Properties();
-//        FileInputStream fileInputStream;
+//check1
+    //check2
+@SuppressWarnings("serial")
+public class View extends JFrame {
+
+
+    public View(String name, boolean hora) {
+        super(name);
+        if(hora)//true = add
+            Model.y= SedanArray.YsAdd;
+        else
+            Model.y= SedanArray.YsRem;
+        JPanel jcp = new JPanel(new BorderLayout());
+        setContentPane(jcp);
+        jcp.add(new DrawingComponent(), BorderLayout.CENTER);
+        jcp.setBackground(Color.gray);
+        setSize(600, 650);
+        setLocationRelativeTo(null);
+        //setDefaultCloseOperation(EXIT_ON_CLOSE);
+    }
+    /**
+     * Меню  для пользователя с root правами, включает в себя дополнительный функционал: включение/отключение логов,
+     * запуск автотестов. Для доступа к этому меню неоюходимо верно ввести пароль
+     */
+
+    public static void rootMenu() {
+
+
         Scanner scanner = new Scanner(System.in);
-//        String password;
-//        System.out.println("Введите пароль для получения прав root.");
-//        password = scanner.nextLine();
-//        if(!password.equals(prop.getProperty("password"))){
-//            String errorMessage = "Неудачная попытка получения прав root. Время ошибки: " + LocalTime.now();
-//            Car.logWriter(errorMessage);
-//            rootMenu();
-//        }
+
         int choice;
         System.out.println("Добро пожаловать," + Model.login + "\nВыберите действие");
         System.out.println("1: Демонстрация работы класса Sedan");
@@ -31,43 +52,76 @@ public class View {
         System.out.println("9: Изменить элемент в файле.");
         System.out.println("10: Логи ArrayList.");
         System.out.println("11: Логи LinkedList.");
+        System.out.println("12: Нарисовать графики.");
 
-        choice = scanner.nextInt();
-        switch (choice){
-            case 1: sedanCreation();break;
-            case 2: truckCreation();break;
-            case 3: dpsDemonstration();break;
-            case 4: Controller.logEnd(Model.login);break;
-            case 5: switchDebugging();break;
+        try {
+            choice = scanner.nextInt();
+        } catch (Exception e) {
+            String errorMessage = "Неверный выбор пункта меню. Время ошибки: " + LocalTime.now();
+            ExceptionHandler.addErr(e,errorMessage);
+            System.out.println("Введена не цифра.");
+            rootMenu();
+            return;
+        }
+        switch (choice) {
+            case 1:
+                sedanCreation();
+                break;
+            case 2:
+                truckCreation();
+                break;
+            case 3:
+                dpsDemonstration();
+                break;
+            case 4:
+                ExceptionHandler.logEnd(Model.login);
+                break;
+            case 5:
+                switchDebugging();
+                break;
             case 6:
                 System.out.println("Автотесты активно идут...");
                 sleep();
                 rootMenu();
                 break;
 
-            case 7: showDb();
+            case 7:
+                showDb();
                 rootMenu();
                 break;
-            case 8: deleteFromDb();
+            case 8:
+                deleteFromDb();
                 rootMenu();
                 break;
-            case 9: changeDb();
+            case 9:
+                changeDb();
                 rootMenu();
                 break;
-            case 10: arrayListDemonstration(); rootMenu(); break;
-            case 11: linkedListDemonstration(); rootMenu(); break;
+            case 10:
+                arrayListDemonstration();
+                rootMenu();
+                break;
+            case 11:
+                linkedListDemonstration();
+                rootMenu();
+                break;
+            case 12:
+                draw();
+                rootMenu();
+                break;
             default: {
                 String errorMessage = "Неправильно выбран пункт меню. Время ошибки: " + LocalTime.now();
-                Controller.logWriter(errorMessage);
+                System.out.println("Введено неверное значение, попробуйте снова");
+                ExceptionHandler.logWriter(errorMessage);
                 rootMenu();
             }
         }
     }
 
-    public static void menu(){
-//        Properties prop = new Properties();
-//        FileInputStream fileInputStream;
-
+    /**
+     * Обычное меню, предоставляющие классический функционал
+     */
+    public static void menu() {
 
         Scanner scanner = new Scanner(System.in);
         int choice;
@@ -81,36 +135,70 @@ public class View {
         System.out.println("7: Изменить элемент в файле.");
         System.out.println("8: Вызов методов для ArrayList.");
         System.out.println("9: Вызов методов для LinkedList.");
-        choice = scanner.nextInt();
-        switch (choice){
-            case 1: sedanCreation();break;
-            case 2: truckCreation();break;
-            case 3: dpsDemonstration();break;
-            case 4: Controller.logEnd(Model.login);break;
-            case 5: showDb();
+        System.out.println("10: Нарисовать графики.");
+        try {
+            choice = scanner.nextInt();
+        } catch (Exception e) {
+            String errorMessage = "Неверный выбор пункта меню. Время ошибки: " + LocalTime.now();
+            ExceptionHandler.addErr(e,errorMessage);
+            System.out.println("Введена не цифра.");
+            menu();
+            return;
+        }
+        switch (choice) {
+            case 1:
+                sedanCreation();
+                break;
+            case 2:
+                truckCreation();
+                break;
+            case 3:
+                dpsDemonstration();
+                break;
+            case 4:
+                ExceptionHandler.logEnd(Model.login);
+                break;
+            case 5:
+                showDb();
                 rootMenu();
                 break;
-            case 6: deleteFromDb();
+            case 6:
+                deleteFromDb();
                 rootMenu();
                 break;
-            case 7: changeDb();
+            case 7:
+                changeDb();
                 rootMenu();
                 break;
-            case 8: arrayListDemonstration(); break;
+            case 8:
+                arrayListDemonstration();
+                menu();
+                break;
             case 9:
-                System.out.println("Yo is me");//linkedListMethods(); break;
+                linkedListDemonstration();
+                menu();
+                break;
+            case 10:
+                draw();
+                menu();
+                break;
             default: {
                 String errorMessage = "Неправильно выбран пункт меню. Время ошибки: " + LocalTime.now();
-                Controller.logWriter(errorMessage);
+                System.out.println("Введено неверное значение, попробуйте снова");
+                ExceptionHandler.logWriter(errorMessage);
                 menu();
             }
         }
     }
 
-    public static void sedanCreation(){
+    /**
+     * Создание объекта класса Sedan, данные для создания вводит пользователь.
+     * После создания объекта, вызывается метод для его демонстрации
+     */
+    public static void sedanCreation() {
         Scanner scanner = new Scanner(System.in);
         String mark;
-        int maxSpeed = 0;
+        int maxSpeed;
         String currentStation;
         boolean isOn;
         int currentSpeed;
@@ -121,10 +209,9 @@ public class View {
         System.out.println("Введите максимальную скорость машины: ");
         try {
             maxSpeed = scanner.nextInt();
-        }
-        catch (Exception e){
+        } catch (Exception e) {
             String errorMessage = "Неправильно введена максимальная скорость. Время ошибки: " + LocalTime.now();
-            Controller.logWriter(errorMessage);
+            ExceptionHandler.addErr(e,errorMessage);
             System.out.println("Неправильно введена максимальная скорость.");
             sedanCreation();
             return;
@@ -132,10 +219,9 @@ public class View {
         System.out.println("Включено ли радио?: ");
         try {
             isOn = scanner.nextBoolean();
-        }
-        catch (Exception e){
+        } catch (Exception e) {
             String errorMessage = "Неправильно введена информация о состоянии радио. Время ошибки: " + LocalTime.now();
-            Controller.logWriter(errorMessage);
+            ExceptionHandler.addErr(e,errorMessage);
             System.out.println("Неправильно введена информация о состоянии радио");
             sedanCreation();
             return;
@@ -144,20 +230,23 @@ public class View {
         System.out.println("Введите текущую скорость скорость машины: ");
         try {
             currentSpeed = scanner.nextInt();
-        }
-        catch (Exception e){
+        } catch (Exception e) {
             String errorMessage = "Неправильно введена текущая скорость. Время ошибки: " + LocalTime.now();
-            Controller.logWriter(errorMessage);
+            ExceptionHandler.addErr(e,errorMessage);
             System.out.println("Неправильно введена текущая скорость.");
             sedanCreation();
             return;
         }
 
-        Sedan sedan = new Sedan(mark,maxSpeed,new Radio(currentStation,isOn),currentSpeed);
+        Sedan sedan = new Sedan(mark, maxSpeed, new Radio(currentStation, isOn), currentSpeed);
         sedanDemonstration(sedan);
     }
 
-    public static void sedanDemonstration(Sedan sedan){
+    /**
+     * Демонстрация функционала класса Sedan
+     * @param sedan - объект, на котором будут вызываться функции демонстрации
+     */
+    public static void sedanDemonstration(Sedan sedan) {
         Scanner scanner = new Scanner(System.in);
         int choice;
         System.out.println("Выберите метод класса Sedan: ");
@@ -207,13 +296,13 @@ public class View {
                     String path;
                     System.out.println("Введите название файла: ");
                     path = scanner.next();
-                    sedan.toFile(path,Model.prop.getProperty("isLogNeeded"));
+                    Controller.toFile(path,sedan.fileWriter());
                     sleep();
                 }
                 sedanDemonstration(sedan);
             }
             case 8 -> {
-                if(Model.userGroup.equals("root")) rootMenu();
+                if (Model.userGroup.equals("root")) rootMenu();
                 else menu();
             }
             default -> {
@@ -223,7 +312,11 @@ public class View {
         }
     }
 
-    public static void truckCreation(){
+    /**
+     * Создание объекта класса Truck, данные для создания вводит пользователь.
+     * После создания объекта, вызывается метод для его демонстрации
+     */
+    public static void truckCreation() {
         Scanner scanner = new Scanner(System.in);
         String mark;
         int maxSpeed;
@@ -239,10 +332,9 @@ public class View {
         System.out.println("Введите максимальную скорость машины: ");
         try {
             maxSpeed = scanner.nextInt();
-        }
-        catch (Exception e){
+        } catch (Exception e) {
             String errorMessage = "Неправильно введена максимальная скорость. Время ошибки: " + LocalTime.now();
-            Controller.logWriter(errorMessage);
+            ExceptionHandler.addErr(e,errorMessage);
             System.out.println("Неправильно введена максимальная скорость.");
             truckCreation();
             return;
@@ -250,10 +342,9 @@ public class View {
         System.out.println("Включено ли радио?: ");
         try {
             isOn = scanner.nextBoolean();
-        }
-        catch (Exception e){
+        } catch (Exception e) {
             String errorMessage = "Неправильно введена информация о состоянии радио. Время ошибки: " + LocalTime.now();
-            Controller.logWriter(errorMessage);
+            ExceptionHandler.addErr(e,errorMessage);
             System.out.println("Неправильно введена информация о состоянии радио.");
             truckCreation();
             return;
@@ -262,10 +353,9 @@ public class View {
         System.out.println("Введите текущую скорость скорость машины: ");
         try {
             currentSpeed = scanner.nextInt();
-        }
-        catch (Exception e){
+        } catch (Exception e) {
             String errorMessage = "Неправильно введена текущая скорость. Время ошибки: " + LocalTime.now();
-            Controller.logWriter(errorMessage);
+            ExceptionHandler.addErr(e,errorMessage);
             System.out.println("Неправильно введена текущая скорость.");
             truckCreation();
             return;
@@ -273,10 +363,9 @@ public class View {
         System.out.println("Введите вес машины: ");
         try {
             weight = scanner.nextInt();
-        }
-        catch (Exception e){
+        } catch (Exception e) {
             String errorMessage = "Неправильно введен вес грузовика. Время ошибки: " + LocalTime.now();
-            Controller.logWriter(errorMessage);
+            ExceptionHandler.addErr(e,errorMessage);
             System.out.println("Неправильно введен вес грузовика.");
             truckCreation();
             return;
@@ -284,19 +373,22 @@ public class View {
         System.out.println("Введите высоту кузова");
         try {
             carcaseHeight = scanner.nextDouble();
-        }
-        catch (Exception e){
+        } catch (Exception e) {
             String errorMessage = "Неправильно введена высота кузова грузовика. Время ошибки: " + LocalTime.now();
-            Controller.logWriter(errorMessage);
+            ExceptionHandler.addErr(e,errorMessage);
             System.out.println("Неправильно введена высота кузова грузовика.");
             truckCreation();
             return;
         }
-        Truck truck = new Truck(mark,maxSpeed,new Radio(currentStation,isOn),currentSpeed,weight,carcaseHeight);
+        Truck truck = new Truck(mark, maxSpeed, new Radio(currentStation, isOn), currentSpeed, weight, carcaseHeight);
         truckDemonstration(truck);
     }
 
-    public static void truckDemonstration(Truck truck){
+    /**
+     * Демонстрация функционала класса Truck
+     * @param truck- объект, на котором будут вызываться функции демонстрации
+     */
+    public static void truckDemonstration(Truck truck) {
         Scanner scanner = new Scanner(System.in);
         int choice;
         System.out.println("Выберите метод класса Sedan: ");
@@ -358,13 +450,13 @@ public class View {
                     String path;
                     System.out.println("Введите название файла: ");
                     path = scanner.next();
-                    truck.toFile(path,Model.prop.getProperty("isLogNeeded"));
+                    Controller.toFile(path,truck.fileWriter());
                     sleep();
                 }
                 truckDemonstration(truck);
             }
             case 10 -> {
-                if(Model.userGroup.equals("root")) rootMenu();
+                if (Model.userGroup.equals("root")) rootMenu();
                 else menu();
             }
             default -> {
@@ -374,23 +466,28 @@ public class View {
         }
     }
 
-    public static void dpsDemonstration(){
+    /**
+     * Демонстрация работы класса DPS.
+     * Интересного мало, объекты создаются автоматически, параметры выбираются специально для того,
+     * чтобы проверка давала разный результат
+     */
+    public static void dpsDemonstration() {
         ArrayList<Car> cars = new ArrayList<>();
         Scanner scanner = new Scanner(System.in);
         int choice;
-        cars.add(new Sedan("Volvo",200,new Radio("DriveFM",true),120));
-        cars.add(new Sedan("Lada",200,new Radio("DriveFM",true),80));
-        cars.add(new Truck("Kamaz",200,new Radio("DriveFM",true),60,1200,1.5));
-        cars.add(new Truck("Tesla",200,new Radio("DriveFM",true),70,900,1.3));
-        cars.add(new Truck("Very high truck",200,new Radio("DriveFM",true),70,900,2.6));
+        cars.add(new Sedan("Volvo", 200, new Radio("DriveFM", true), 120));
+        cars.add(new Sedan("Lada", 200, new Radio("DriveFM", true), 80));
+        cars.add(new Truck("Kamaz", 200, new Radio("DriveFM", true), 60, 1200, 1.5));
+        cars.add(new Truck("Tesla", 200, new Radio("DriveFM", true), 70, 900, 1.3));
+        cars.add(new Truck("Very high truck", 200, new Radio("DriveFM", true), 70, 900, 2.6));
         System.out.println("Выберите  для проверки одну из машин со следующими значащами параметрами, или нажмите 0" +
                 " для выхода в главное меню ");
-        for (Car car: cars) {
+        for (Car car : cars) {
             System.out.println((cars.indexOf(car) + 1) + ":");
             car.dpsRelatedParams();
         }
         choice = scanner.nextInt();
-        switch (choice){
+        switch (choice) {
             case 0 -> menu();
             case 1 -> {
                 DPS.pass(cars.get(0));
@@ -425,65 +522,71 @@ public class View {
 
     }
 
-    public static void sleep(){
-        try
-        {
+    /**
+     * Создан по причине того, что я забыл что Thread.sleep() существует.
+     * Нужен для того чтобы вывод в консоль было удобнее читать
+     */
+    public static void sleep() {
+        try {
             Thread.sleep(3000);
-        }
-        catch(InterruptedException ex)
-        {
+        } catch (InterruptedException ex) {
             Thread.currentThread().interrupt();
         }
     }
 
-    public static void enterPassword(){
+    /**
+     * Проверка правильности пароля, если устанволен root пользователь
+     * при неправильном вводе будет бесконечно предлагать ввести пароль
+     */
+    public static void enterPassword() {
         Scanner scanner = new Scanner(System.in);
         String password;
         System.out.println("Введите пароль для получения прав root.");
         password = scanner.nextLine();
-        if(!password.equals(Model.prop.getProperty("password"))){
+        if (!password.equals(Model.prop.getProperty("password"))) {
             String errorMessage = "Неудачная попытка получения прав root. Время ошибки: " + LocalTime.now();
-            Controller.logWriter(errorMessage);
+            ExceptionHandler.logWriter(errorMessage);
             enterPassword();
         }
     }
 
-    public static void switchDebugging(){
-        //prop.setProperty("isLogNeeded","true");
+    /**
+     * Включает отладку, если она выключена, и наоборот.
+     */
+    public static void switchDebugging() {
         FileOutputStream out = null;
         try {
             out = new FileOutputStream(Model.PATH_TO_PROPERTIES);
         } catch (FileNotFoundException e) {
-            e.printStackTrace();
+            ExceptionHandler.addErr(e,"Файл не найден");
         }
         FileInputStream in = null;
         try {
             in = new FileInputStream(Model.PATH_TO_PROPERTIES);
         } catch (FileNotFoundException e) {
-            e.printStackTrace();
+            ExceptionHandler.addErr(e,"Файл не найден");
         }
         Properties props = new Properties();
 
         try {
             props.load(in);
         } catch (IOException e) {
-            e.printStackTrace();
+            ExceptionHandler.addErr(e,"Ошибка ввода-вывода");
         }
         try {
             in.close();
         } catch (IOException e) {
-            e.printStackTrace();
+            ExceptionHandler.addErr(e,"Ошибка ввода-вывода");
         }
-        if(Model.logging) {
-            Main.logging = false;
+        if (Model.logging) {
+            Model.logging = false;
             props.setProperty("isLogNeeded", "false");
             props.setProperty("login", "Semyon");
             props.setProperty("password", "javaLabs");
             props.setProperty("userGroup", "root");
             System.out.println("Запись логов отключена");
-        }
-        else {
-            Main.logging = true;
+        } else {
+            Model.logging = true;
             props.setProperty("isLogNeeded", "true");
             props.setProperty("login", "Semyon");
             props.setProperty("password", "javaLabs");
@@ -492,29 +595,31 @@ public class View {
         try {
             props.store(out, null);
         } catch (IOException e) {
-            e.printStackTrace();
+            ExceptionHandler.addErr(e,"Ошибка ввода-вывода");
         }
         try {
             out.close();
         } catch (IOException e) {
-            e.printStackTrace();
+            ExceptionHandler.addErr(e,"Ошибка ввода-вывода");
         }
-        Controller.logWriter("Запись логов включена");
+        ExceptionHandler.logWriter("Запись логов включена");
         rootMenu();
     }
 
-    public static void deleteFromDb(){
+    /**
+     * Вызывает диалог с пользователем,для измененя объекта в базе данных, самум логику изменения выполняет
+     * Controller.deleteObject();
+     */
+    public static void deleteFromDb() {
         Scanner scanner = new Scanner(System.in);
         String path;
         int index;
-        boolean indexIsBad = true;
         System.out.println("Введите название файла");
         try {
             path = scanner.nextLine();
-        }
-        catch (Exception e){
+        } catch (Exception e) {
             String errorMessage = "Неправильно введено название файла. Время ошибки: " + LocalTime.now();
-            Controller.logWriter(errorMessage);
+            ExceptionHandler.addErr(e,errorMessage);
             System.out.println("Неправильно введено название файла.");
             deleteFromDb();
             return;
@@ -525,47 +630,52 @@ public class View {
 
         try {
             Controller.deleteObject(path, index - 1);
-        } catch (Exception e){
+        } catch (Exception e) {
             String errorMessage = "Неправильно введен индекс. Время ошибки: " + LocalTime.now();
-            Controller.logWriter(errorMessage);
+            ExceptionHandler.addErr(e,errorMessage);
             System.out.println("Неправильно введен индекс.");
             deleteFromDb();
             return;
         }
-        Controller.logWriter("Из файла " + path + " удален элемент. " + " Время: " + LocalTime.now());
+        ExceptionHandler.logWriter("Из файла " + path + " удален элемент. " + " Время: " + LocalTime.now());
     }
 
-    public static void showDb(){
+    /**
+     * Демонстрирует объекты из быза данных
+     */
+    public static void showDb() {
         Scanner scanner = new Scanner(System.in);
         String path;
         System.out.println("Введите название файла");
         try {
             path = scanner.nextLine();
-        }
-        catch (Exception e){
+        } catch (Exception e) {
             String errorMessage = "Неправильно введено название файла. Время ошибки: " + LocalTime.now();
-            Controller.logWriter(errorMessage);
+            ExceptionHandler.addErr(e,errorMessage);
             System.out.println("Неправильно введено название файла.");
             showDb();
             return;
         }
         ArrayList<Car> cars = Controller.fromFile(path);
-        for (Car car: cars){
+        for (Car car : cars) {
             System.out.println(car.fileWriter());
         }
         sleep();
     }
 
-    public static void changeDb(){
+    /**
+     * Вызывает диалог с пользователем,для измененя объекта в базе данных, самум логику изменения выполняет
+     * Controller.changeObject();
+     */
+    public static void changeDb() {
         Scanner scanner = new Scanner(System.in);
         String path;
         System.out.println("Введите название файла");
         try {
             path = scanner.nextLine();
-        }
-        catch (Exception e){
+        } catch (Exception e) {
             String errorMessage = "Неправильно введено название файла. Время ошибки: " + LocalTime.now();
-            Controller.logWriter(errorMessage);
+            ExceptionHandler.addErr(e,errorMessage);
             System.out.println("Неправильно введено название файла.");
             changeDb();
             return;
@@ -573,77 +683,87 @@ public class View {
         ArrayList<Car> cars = Controller.fromFile(path);
         int index;
         System.out.println("Введите индекс измняемого элемента");
-        index= scanner.nextInt();
-        ArrayList<Car> carsNew = Controller.changeObject(cars,index-1);
-        String logs;
-        if(Model.logging){
-            logs = "true";
-        }
-        else logs="false";
+        index = scanner.nextInt();
+        ArrayList<Car> carsNew = Controller.changeObject(cars, index - 1);
         File file = new File(path);
         try {
             PrintWriter writer = new PrintWriter(file);
             writer.print("");
             writer.close();
-            for (Car obj: carsNew){
-                obj.toFile(path,logs);
+            for (Car obj : carsNew) {
+                Controller.toFile(path,obj.fileWriter());
             }
-            Controller.logWriter("Внесены изменения в файл " + path + " Время: " + LocalTime.now());
+            ExceptionHandler.logWriter("Внесены изменения в файл " + path + " в " + LocalTime.now());
         } catch (FileNotFoundException e) {
-            e.printStackTrace();
+            String errorMessage = "Ошибка при внесении данных в файл: " + LocalTime.now();
+            ExceptionHandler.addErr(e,errorMessage);
+            System.out.println("Ошибка при внесении данных в файл.");
+            changeDb();
+            return;
         }
 
     }
 
-    public static void arrayListMethods(){
-        Scanner scanner = new Scanner(System.in);
-        System.out.println("Выберите операцию: ");
-        System.out.println("1: Создание массива");
-        System.out.println("2: Очистка массива");
-        int choice = scanner.nextInt();
+    /**
+     * Запуск методов для измерения времени работы ArrayList
+     */
+    public static void arrayListDemonstration() {
+        ArrayList<Sedan> ARRAY_LIST_SIZE_10 = ListsCount.arrayListCreation(10);
+        ArrayList<Sedan> ARRAY_LIST_SIZE_100 = ListsCount.arrayListCreation(100);
+        ArrayList<Sedan> ARRAY_LIST_SIZE_1000 = ListsCount.arrayListCreation(1000);
+        ArrayList<Sedan> ARRAY_LIST_SIZE_10000 = ListsCount.arrayListCreation(10000);
+        ArrayList<Sedan> ARRAY_LIST_SIZE_100000 = ListsCount.arrayListCreation(100000);
+        ListsCount.arrayListClean(ARRAY_LIST_SIZE_10);
+        ListsCount.arrayListClean(ARRAY_LIST_SIZE_100);
+        ListsCount.arrayListClean(ARRAY_LIST_SIZE_1000);
+        ListsCount.arrayListClean(ARRAY_LIST_SIZE_10000);
+        ListsCount.arrayListClean(ARRAY_LIST_SIZE_100000);
+    }
 
-        switch (choice) {
-            case 1 -> createArraylist();
-            case 2 -> System.out.println("123");//cleanArrayList();
-            default -> {
-                System.out.println("Неверный ввод");
-                arrayListMethods();
-                break;
+    /**
+     * Запуск методов для измерения времени работы LinkedList
+     */
+    public static void linkedListDemonstration() {
+        LinkedList<Sedan> LINKED_LIST_SIZE_10 = ListsCount.linkedListCreation(10);
+        LinkedList<Sedan> LINKED_LIST_SIZE_100 = ListsCount.linkedListCreation(100);
+        LinkedList<Sedan> LINKED_LIST_SIZE_1000 = ListsCount.linkedListCreation(1000);
+        LinkedList<Sedan> LINKED_LIST_SIZE_10000 = ListsCount.linkedListCreation(10000);
+        LinkedList<Sedan> LINKED_LIST_SIZE_100000 = ListsCount.linkedListCreation(100000);
+        ListsCount.linkedListClean(LINKED_LIST_SIZE_10);
+        ListsCount.linkedListClean(LINKED_LIST_SIZE_100);
+        ListsCount.linkedListClean(LINKED_LIST_SIZE_1000);
+        ListsCount.linkedListClean(LINKED_LIST_SIZE_10000);
+        ListsCount.linkedListClean(LINKED_LIST_SIZE_100000);
+    }
+
+    /**
+     *
+     */
+    public static void draw(){
+        SedanArray С1 = new SedanArray(10);
+        SedanArray С2 = new SedanArray(100);
+        SedanArray С3 = new SedanArray(1000);
+        SedanArray С4 = new SedanArray(10000);
+        SedanArray С5 = new SedanArray(100000);
+        SedanArray.toFile();
+        SedanArray.fromFile();
+        Scanner S = new Scanner(System.in);
+            System.out.println("Построить график добавления (1) или удаления (2) элементов (введи 0 для выхода)?");
+
+            int var = S.nextInt();
+            switch(var)
+            {
+                case 0:
+                    Model.Log.log(Level.INFO, "Завершение программы в {0}",LocalTime.now());
+                    S.close();
+                    return;
+                case 1:
+                    new View("График добавления элементов",true).setVisible(true);
+                    break;
+                case 2:
+                    new View("График удаления элементов", false).setVisible(true);
+                    break;
             }
-        }
-    }
-
-    public static ArrayList<Sedan> createArraylist(){
-        Scanner scanner = new Scanner(System.in);
-        System.out.println("Введите размер массива: ");
-        int size = scanner.nextInt();
-        ArrayList<Sedan> sedans = Controller.arrayListCreation(size);
-        return sedans;
-    }
-
-    public static void arrayListDemonstration(){
-        ArrayList<Sedan> ARRAY_LIST_SIZE_10 = Controller.arrayListCreation(10);
-        ArrayList<Sedan> ARRAY_LIST_SIZE_100 = Controller.arrayListCreation(100);
-        ArrayList<Sedan> ARRAY_LIST_SIZE_1000 = Controller.arrayListCreation(1000);
-        ArrayList<Sedan> ARRAY_LIST_SIZE_10000 = Controller.arrayListCreation(10000);
-        ArrayList<Sedan> ARRAY_LIST_SIZE_100000= Controller.arrayListCreation(100000);
-        Controller.arrayListClean(ARRAY_LIST_SIZE_10);
-        Controller.arrayListClean(ARRAY_LIST_SIZE_100);
-        Controller.arrayListClean(ARRAY_LIST_SIZE_1000);
-        Controller.arrayListClean(ARRAY_LIST_SIZE_10000);
-        Controller.arrayListClean(ARRAY_LIST_SIZE_100000);
-    }
-
-    public static void linkedListDemonstration(){
-        LinkedList<Sedan> LINKED_LIST_SIZE_10 = Controller.linkedListCreation(10);
-        LinkedList<Sedan> LINKED_LIST_SIZE_100 = Controller.linkedListCreation(100);
-        LinkedList<Sedan> LINKED_LIST_SIZE_1000 = Controller.linkedListCreation(1000);
-        LinkedList<Sedan> LINKED_LIST_SIZE_10000 = Controller.linkedListCreation(10000);
-        LinkedList<Sedan> LINKED_LIST_SIZE_100000= Controller.linkedListCreation(100000);
-        Controller.linkedListClean(LINKED_LIST_SIZE_10);
-        Controller.linkedListClean(LINKED_LIST_SIZE_100);
-        Controller.linkedListClean(LINKED_LIST_SIZE_1000);
-        Controller.linkedListClean(LINKED_LIST_SIZE_10000);
-        Controller.linkedListClean(LINKED_LIST_SIZE_100000);
     }
 }
+

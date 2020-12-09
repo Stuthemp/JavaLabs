@@ -1,0 +1,3 @@
+volvo,200,DriveFm,true,120
+Kamaz,160,JumorFM,false,60,300,1.0
+Nissan,230,LoveFM,true,50

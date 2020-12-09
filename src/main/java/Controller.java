@@ -1,5 +1,6 @@
 import java.io.*;
 import java.nio.charset.StandardCharsets;
+import java.security.spec.ECField;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.LinkedList;
@@ -8,12 +9,38 @@ import java.util.Scanner;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+/**
+ * Выполняет часть логики по записи в файлы
+ */
+
+//check1
+    //check2
 public class Controller {
 
-    private static final Logger Log = Logger.getLogger(Main.class.getName());
 
+    public static void toFile(String Path,String text){
+        try(
+                OutputStreamWriter writer = new OutputStreamWriter(new FileOutputStream(Path,true), StandardCharsets.UTF_8)
+        ){
+            ExceptionHandler.logWriter(text);
+            String message = "Произвдена запись в файл " + Path + " в " + LocalTime.now();
+            ExceptionHandler.logWriter(message);
+            writer.write(text);
+            //writer.write(System.lineSeparator());
+            writer.flush();
+            writer.close();
+        }
+        catch(IOException e){
+            ExceptionHandler.addErr(e,"Ошибка записи в файл");
+        }
+    }
+
+    /**
+     * Читаем данные из файла с БД
+     * @param Path - файл откуда мы читаем данные
+     * @return - возрващаем прочитанный массив
+     */
     public  static ArrayList<Car> fromFile(String Path){
-        //Log.log(Level.INFO, "Произведено чтение из файла {0} в {1}", new Object[] {Path, LocalTime.now()});
         ArrayList<Car> cars = new ArrayList<>();
         try {
             File file = new File(Path);
@@ -24,7 +51,6 @@ public class Controller {
             // считаем сначала первую строку
             String line = reader.readLine();
             while (line != null) {
-                //System.out.println(line);
                 String [] fields = line.split(",");
                 if(fields.length == 5)
                     cars.add(new Sedan(fields[0].toString(),Integer.parseInt(fields[1]),new Radio(fields[2].toString(),
@@ -35,14 +61,21 @@ public class Controller {
                             Integer.parseInt(fields[5]),Double.parseDouble(fields[6])));
                 line = reader.readLine();
             }
+            ExceptionHandler.logWriter("Произведено чтение из фала " + Path + " в " + LocalTime.now());
         } catch (FileNotFoundException e) {
-            e.printStackTrace();
+            ExceptionHandler.addErr(e,"файл не найден");
         } catch (IOException e) {
-            e.printStackTrace();
+            ExceptionHandler.addErr(e,"Проблемы с операцией ввода-вывода");
         }
         return cars;
     }
 
+    /**
+     * Удаляем объект их файла базы данных
+     * @param Path - путь до файла БД откуда удаляем объект
+     * @param index - индекс объекта который будем удалять
+     * @return - возвращаем измененную коллекцию
+     */
     public  static ArrayList<Car> deleteObject(String Path, int index){
         ArrayList<Car> cars = new ArrayList<>();
         try {
@@ -55,7 +88,6 @@ public class Controller {
             String line = reader.readLine();
             //System.out.println("Перед while");
             while (line != null) {
-                //System.out.println(line);
                 String [] fields = line.split(",");
                 if(fields.length == 5)
                     cars.add(new Sedan(fields[0].toString(),Integer.parseInt(fields[1]),new Radio(fields[2].toString(),
@@ -69,24 +101,30 @@ public class Controller {
             PrintWriter writer = new PrintWriter(file);
             writer.print("");
             writer.close();
+            ExceptionHandler.logWriter("Удален объект из файла "+ Path + " в " + LocalTime.now());
         } catch (FileNotFoundException e) {
-            e.printStackTrace();
+            ExceptionHandler.addErr(e,"Файл не анйден");
         } catch (IOException e) {
-            e.printStackTrace();
+            ExceptionHandler.addErr(e,e.getMessage());
         }
 
 
         cars.remove(index);
 
         for (Car car: cars) {
-            if(car instanceof Sedan)
-                ((Sedan)car).toFile(Path,Boolean.toString(Main.logging));
-            else ((Truck)car).toFile(Path,Boolean.toString(Main.logging));
+            Controller.toFile(Path,car.fileWriter());
         }
         return cars;
     }
 
+    /**
+     * Меняем объект в переданной коллекции
+     * @param cars - коллекция объектов, в которой будем проводить изменения
+     * @param index - индекс изменяемого элемента
+     * @return -  возвращаем измененный массив
+     */
     public  static ArrayList<Car> changeObject(ArrayList<Car> cars, int index){
+
         Car car = cars.get(index);
         if(car instanceof Sedan){
             Scanner scanner = new Scanner(System.in);
@@ -98,12 +136,28 @@ public class Controller {
             System.out.println("4: Текущую радиостанцию.");
             System.out.println("5: Состояние радио.");
 
-            choice = scanner.nextInt();
+            try {
+                choice = scanner.nextInt();
+            } catch (Exception e) {
+                String errorMessage = "Неверный выбор пункта меню. Время ошибки: " + LocalTime.now();
+                ExceptionHandler.addErr(e,errorMessage);
+                System.out.println("Введена не цифра.");
+                changeObject(cars,index);
+                return cars;
+            }
             switch (choice) {
                 case 1 -> {
                     System.out.println("Введите новое значение");
                     int speed;
-                    speed = scanner.nextInt();
+                    try {
+                        speed = scanner.nextInt();
+                    } catch (Exception e) {
+                        String errorMessage = "Неправильно введена скорость. Время ошибки: " + LocalTime.now();
+                        ExceptionHandler.addErr(e,errorMessage);
+                        System.out.println("Неправильно введена максимальная скорость.");
+                        changeObject(cars,index);
+                        return cars;
+                    }
                     car.setCurrentSpeed(speed);
                 }
                 case 2 -> {
@@ -115,19 +169,35 @@ public class Controller {
                 case 3 -> {
                     System.out.println("Введите новое значение");
                     int speed;
-                    speed = scanner.nextInt();
+                    try {
+                        speed = scanner.nextInt();
+                    } catch (Exception e) {
+                        String errorMessage = "Неправильно введена скорость. Время ошибки: " + LocalTime.now();
+                        ExceptionHandler.addErr(e,errorMessage);
+                        System.out.println("Неправильно введена максимальная скорость.");
+                        changeObject(cars,index);
+                        return cars;
+                    }
                     car.setMaxSpeed(speed);
                 }
                 case 4 -> {
                     System.out.println("Введите новое значение");
                     String station;
-                    station = scanner.nextLine();
+                    station = scanner.next();
                     car.setRadioStation(station);
                 }
                 case 5 -> {
                     System.out.println("Введите новое значение");
                     boolean bool;
-                    bool = scanner.nextBoolean();
+                    try {
+                        bool = scanner.nextBoolean();
+                    } catch (Exception e) {
+                        String errorMessage = "Неправильно введена информация о состоянии радио. Время ошибки: " + LocalTime.now();
+                        ExceptionHandler.addErr(e,errorMessage);
+                        System.out.println("Неправильно введена информация о состоянии радио");
+                        changeObject(cars,index);
+                        return cars;
+                    }
                     car.setRadioState(bool);
                 }
                 default -> changeObject(cars,index);
@@ -150,7 +220,15 @@ public class Controller {
                 case 1 -> {
                     System.out.println("Введите новое значение");
                     int speed;
-                    speed = scanner.nextInt();
+                    try {
+                        speed = scanner.nextInt();
+                    } catch (Exception e) {
+                        String errorMessage = "Неправильно введена скорость. Время ошибки: " + LocalTime.now();
+                        ExceptionHandler.addErr(e,errorMessage);
+                        System.out.println("Неправильно введена максимальная скорость.");
+                        changeObject(cars,index);
+                        return cars;
+                    }
                     car.setCurrentSpeed(speed);
                 }
                 case 2 -> {
@@ -162,7 +240,15 @@ public class Controller {
                 case 3 -> {
                     System.out.println("Введите новое значение");
                     int speed;
-                    speed = scanner.nextInt();
+                    try {
+                        speed = scanner.nextInt();
+                    } catch (Exception e) {
+                        String errorMessage = "Неправильно введена скорость. Время ошибки: " + LocalTime.now();
+                        ExceptionHandler.addErr(e,errorMessage);
+                        System.out.println("Неправильно введена максимальная скорость.");
+                        changeObject(cars,index);
+                        return cars;
+                    }
                     car.setMaxSpeed(speed);
                 }
                 case 4 -> {
@@ -174,19 +260,43 @@ public class Controller {
                 case 5 -> {
                     System.out.println("Введите новое значение");
                     boolean bool;
-                    bool = scanner.nextBoolean();
+                    try {
+                        bool = scanner.nextBoolean();
+                    } catch (Exception e) {
+                        String errorMessage = "Неправильно введена информация о состоянии радио. Время ошибки: " + LocalTime.now();
+                        ExceptionHandler.addErr(e,errorMessage);
+                        System.out.println("Неправильно введена информация о состоянии радио");
+                        changeObject(cars,index);
+                        return cars;
+                    }
                     car.setRadioState(bool);
                 }
                 case 6 -> {
                     System.out.println("Введите новое значение");
                     int weight;
-                    weight = scanner.nextInt();
+                    try {
+                        weight = scanner.nextInt();
+                    } catch (Exception e) {
+                        String errorMessage = "Неправильно введен вес грузовика. Время ошибки: " + LocalTime.now();
+                        ExceptionHandler.addErr(e,errorMessage);
+                        System.out.println("Неправильно введен вес грузовика.");
+                        changeObject(cars,index);
+                        return cars;
+                    }
                     ((Truck)car).setWeight(weight);
                 }
                 case 7 -> {
                     System.out.println("Введите новое значение");
                     double height;
-                    height = scanner.nextDouble();
+                    try {
+                        height = scanner.nextDouble();
+                    } catch (Exception e) {
+                        String errorMessage = "Неправильно введена высота кузова грузовика. Время ошибки: " + LocalTime.now();
+                        ExceptionHandler.addErr(e,errorMessage);
+                        System.out.println("Неправильно введена высота кузова грузовика.");
+                        changeObject(cars,index);
+                        return cars;
+                    }
                     ((Truck)car).setCarcaseHeight(height);
                 }
                 default -> changeObject(cars,index);
@@ -198,173 +308,4 @@ public class Controller {
         return cars;
     }
 
-    public static void logWriter(String message){
-        if(!Model.logging) return;
-        try(
-                OutputStreamWriter writer = new OutputStreamWriter(new FileOutputStream("logs.txt",true), StandardCharsets.UTF_8)
-        ){
-            writer.write(System.lineSeparator());
-            writer.write(message);
-            writer.flush();
-            writer.close();
-        }
-        catch(IOException e){
-            Log.log(Level.SEVERE, "Ошибка вывода!", e);
-        }
-
-    }
-
-    public static void logStart(String login){
-        if(!Model.logging) return;
-        try(
-                OutputStreamWriter writer = new OutputStreamWriter(new FileOutputStream("logs.txt",true), StandardCharsets.UTF_8)
-        ){
-            writer.write(System.lineSeparator());
-            writer.write("Программа запущена пользователем " + login  + " в " + LocalTime.now());
-            writer.flush();
-            writer.close();
-        }
-        catch(IOException e){
-            Model.Log.log(Level.SEVERE, "Ошибка вывода!", e);
-        }
-
-    }
-
-    public static void logEnd(String login){
-        if(!Model.logging) return;
-        try(
-                OutputStreamWriter writer = new OutputStreamWriter(new FileOutputStream("logs.txt",true), StandardCharsets.UTF_8)
-        ){
-            writer.write(System.lineSeparator());
-            writer.write("Программа, запущенная пользователем " + login + " завершена в " + LocalTime.now());
-            writer.flush();
-            writer.close();
-        }
-        catch(IOException e){
-            Model.Log.log(Level.SEVERE, "Ошибка вывода!", e);
-        }
-
-    }
-
-    public static ArrayList<Sedan> arrayListCreation(int size){
-        ArrayList<Sedan> sedanArrayList = new ArrayList<>();
-        String logSeparator = "--------------------------------------------------------------------------";
-        logWriter(logSeparator);
-        String[] marks = {"Volvo", "Nissan", "Lada", "BMW", "Subaru", "Toyota"};
-        long start = System.currentTimeMillis();
-        for (int i = 0; i < size; i++) {
-
-            long internalStart = System.currentTimeMillis();
-
-            int mark = (int)(Math.random()*6);
-            int maxSpeed = (int)((Math.random()*((300-100)+1))+100);
-            int currentSpeed = (int)(Math.random()*maxSpeed);
-            sedanArrayList.add(new Sedan(marks[mark],maxSpeed,new Radio(),currentSpeed));
-
-            long internalEnd = System.currentTimeMillis();
-
-            String msg = "add LinkedList, ID=" + i + ", " + (internalEnd - internalStart);
-            logWriter(msg);
-        }
-        long end = System.currentTimeMillis();
-        long timeTaken = end - start;
-        String count = "Count=" + size;
-        logWriter(count);
-        String medianTime = "addArrayListMedianTime=" + (double)timeTaken/size;
-        logWriter(medianTime);
-        String totalTime = "addArrayListTotalTime=" + timeTaken;
-        logWriter(totalTime);
-        return sedanArrayList;
-    }
-
-    public static ArrayList<Sedan> arrayListClean(ArrayList<Sedan> sedans){
-        String logSeparator = "--------------------------------------------------------------------------";
-        logWriter(logSeparator);
-        int size = sedans.size();
-        long start = System.currentTimeMillis();
-        for (int i = 0; i < sedans.size()/10; i++) {
-
-            long internalStart = System.currentTimeMillis();
-
-            int index = (int)(Math.random()*sedans.size());
-           // System.out.println(index);
-
-            sedans.remove(index);
-
-            long internalEnd = System.currentTimeMillis();
-
-            String msg = "remove ArrayList, ID=" + index + ", " + (internalEnd - internalStart);
-            logWriter(msg);
-        }
-        long end = System.currentTimeMillis();
-        long timeTaken = end - start;
-        String count = "Count=" + size/10;
-        logWriter(count);
-        String medianTime = "removeArrayListMedianTime=" + (double)timeTaken/size/10;
-        logWriter(medianTime);
-        String totalTime = "removeArrayListTotalTime=" + timeTaken;
-        logWriter(totalTime);
-        return sedans;
-    }
-
-    public static LinkedList<Sedan> linkedListCreation(int size){
-        LinkedList<Sedan> sedanArrayList = new LinkedList<>();
-        String logSeparator = "--------------------------------------------------------------------------";
-        logWriter(logSeparator);
-        String[] marks = {"Volvo", "Nissan", "Lada", "BMW", "Subaru", "Toyota"};
-        long start = System.currentTimeMillis();
-        for (int i = 0; i < size; i++) {
-
-            long internalStart = System.currentTimeMillis();
-
-            int mark = (int)(Math.random()*6);
-            int maxSpeed = (int)((Math.random()*((300-100)+1))+100);
-            int currentSpeed = (int)(Math.random()*maxSpeed);
-            sedanArrayList.add(new Sedan(marks[mark],maxSpeed,new Radio(),currentSpeed));
-
-            long internalEnd = System.currentTimeMillis();
-
-            String msg = "add LinkedList, ID=" + i + ", " + (internalEnd - internalStart);
-            logWriter(msg);
-        }
-        long end = System.currentTimeMillis();
-        long timeTaken = end - start;
-        String count = "Count=" + size;
-        logWriter(count);
-        String medianTime = "addLinkedListMedianTime=" + (double)timeTaken/size;
-        logWriter(medianTime);
-        String totalTime = "addLinkedListTotalTime=" + timeTaken;
-        logWriter(totalTime);
-        return sedanArrayList;
-    }
-
-    public static LinkedList<Sedan> linkedListClean(LinkedList<Sedan> sedans){
-        String logSeparator = "--------------------------------------------------------------------------";
-        logWriter(logSeparator);
-        int size = sedans.size();
-        long start = System.currentTimeMillis();
-        for (int i = 0; i < sedans.size()/10; i++) {
-
-            long internalStart = System.currentTimeMillis();
-
-            int index = (int)(Math.random()*sedans.size());
-            // System.out.println(index);
-
-            sedans.remove(index);
-
-            long internalEnd = System.currentTimeMillis();
-
-            String msg = "remove ArrayList, ID=" + index + ", " + (internalEnd - internalStart);
-            logWriter(msg);
-        }
-        long end = System.currentTimeMillis();
-        long timeTaken = end - start;
-        String count = "Count=" + size/10;
-        logWriter(count);
-        String medianTime = "removeLinkedListMedianTime=" + (double)timeTaken/size/10;
-        logWriter(medianTime);
-        String totalTime = "removeLinkedListTotalTime=" + timeTaken;
-        logWriter(totalTime);
-        return sedans;
-    }
 }
